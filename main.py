@@ -44,11 +44,11 @@ def import_tests(test_list):
     try:
         with open("import_tests.csv", "w", newline="") as writing_csv:
             writer = csv.writer(writing_csv)
-            writer.writerow(["comp_name", "test_name", "date_created"])
+            writer.writerow(["date_created"])
             for data in test_list:
                 writer.writerow(data)
 
-        insert_query = "INSERT INTO Competency_Assessment_Data (comp_name, test_name, date_created) VALUES(?, ?, ?);"
+        insert_query = "INSERT INTO Competency_Assessment_Data (comp_name, test_name, date_created) VALUES(?,?,?);"
 
         with open("import_tests.csv", "r") as csv_file:
             reader = csv.reader(csv_file)
@@ -66,7 +66,6 @@ def import_tests(test_list):
         print("\n ////////// TESTS ADDED ////////// \n")
     except:
         return None
-        # print("\n !!!!!!!!!! TESTS ALREADY ADDED !!!!!!!!!! \n")
 
 
 list_of_lists_of_tests = [
@@ -91,7 +90,7 @@ list_of_lists_of_tests = [
 
 def import_mock_test_results():
     try:
-        insert_query = "INSERT INTO Assessment_Results (test_id, user_id, competency, assessment, score, date_taken, admined_by) VALUES(?, ?, ?, ?, ?, ?, ?);"
+        insert_query = "INSERT INTO Assessment_Results (test_id, comp_id, user_id, score, date_taken, admin_id) VALUES(?, ?, ?, ?, ?, ?);"
 
         with open("MOCK_TESTS.csv", "r") as csv_file:
             reader = csv.reader(csv_file)
@@ -134,26 +133,26 @@ class Users:
         self.date_created = date_created
         self.hire_date = hire_date
         self.active = active
-        self.attributes = (
+        self.attributes = [
             self.name,
             self.phone,
             self.email,
             self.hashed_password,
+            self.user_type,
             self.date_created,
             self.hire_date,
             self.active,
             self.id,
-        )
+        ]
 
-    def db_update(self, pass_edit=None):
+    def db_update(self):
 
         query = "UPDATE Users SET full_name = ?, phone = ?, email = ?, hashed_password = ?, user_type = ?, date_created = ?, hire_date = ?, active = ? WHERE user_id = ?;"
 
         cursor.execute(query, self.attributes)
-        print(self.id)
         connection.commit()
 
-    def pass_check(self, id, pass_change=None):
+    def pass_check(self, pass_change=None):
         first_pass = False
         new_password = False
         selected_user = get_user(id)
@@ -357,13 +356,59 @@ def get_user(user_id):
     return user
 
 
+def search_users():
+    name_for_search = input(
+        "Enter name you would like to search. \n//Entering name partially will work as long as input is spelt correctly// \n[PRESS ENTER TO RETURN] \n > ")
+    if name_for_search:
+        while True:
+            rows = cursor.execute('SELECT * FROM Users WHERE full_name like ?').fetchall()
+            print(
+                    f'{"User ID":<9}{"Full name":<19}{"Phone Number":<14}{"email":<31}{"Hashed Password":<18}{"User Type":<12}{"Date Added":<12}{"Hire Date":<12}{"Active":<}'
+                )
+                for row in rows:
+                    row = [str(i) for i in row]
+                    print(
+                        f"{row[0]:<9}{row[1]:<19}{row[2]:<14}{row[3]:<31}{row[4]:<18}{row[5]:<12}{row[6]:<12}{row[7]:<12}{row[8]:<8}"
+                    )
+                inquiry = input(
+                    "[1] To search again \n[2] To select a specific user above \n[PRESS ENTER TO RETURN] \n > "
+                )
+                if inquiry:
+                    if inquiry == "1":
+                        break
+                    elif inquiry == "2":
+                        inquiry_2 = input("Please enter the Users ID \n > ")
+                        return view_users(inquiry_2)
+                    else:
+                        print("\n !!!!! Input not recognized !!!!! \n")
+                else:
+                    return None
+        else:
+            return None
+
+
 def view_users(id_num=None):
     while True:
+        if admin_filter:
+            row = cursor.execute(
+                "SELECT * FROM Users WHERE user_type = admin"
+            ).fetchall()
+
+            print(
+                f'{"User ID":<9}{"Full name":<19}{"Phone Number":<14}{"email":<31}{"Hashed Password":<18}{"User Type":<12}{"Date Added":<12}{"Hire Date":<12}{"Active":<}'
+            )
+            for row in rows:
+                row = [str(i) for i in row]
+                print(
+                    f"{row[0]:<9}{row[1]:<19}{row[2]:<14}{row[3]:<31}{row[4]:<18}{row[5]:<12}{row[6]:<12}{row[7]:<12}{row[8]:<8}"
+                )
+            return None
+
         if admin == True:
             if not id_num:
                 rows = cursor.execute("SELECT * FROM Users").fetchall()
                 print(
-                    f'{"User ID":<9}{"full_name":<19}{"Phone Number":<14}{"email":<31}{"Hashed Password":<18}{"User Type":<12}{"Date Added":<12}{"Hire Date":<12}{"Active":<}'
+                    f'{"User ID":<9}{"Full name":<19}{"Phone Number":<14}{"email":<31}{"Hashed Password":<18}{"User Type":<12}{"Date Added":<12}{"Hire Date":<12}{"Active":<}'
                 )
                 for row in rows:
                     row = [str(i) for i in row]
@@ -490,6 +535,325 @@ def view_users(id_num=None):
                     return None
 
 
+class Test_Results:
+    def __init__(
+        self,
+        test_id,
+        comp_id,
+        user_id,
+        score,
+        date_taken,
+        admin_id,
+        best_score=False,
+    ):
+        self.test_id = test_id
+        self.comp_id = comp_id
+        self.user_id = user_id
+        self.score = score
+        self.date_taken = date_taken
+        self.admin_id = admin_id
+        self.best_score = best_score
+        self.attributes = [
+            comp_id,
+            user_id,
+            score,
+            date_taken,
+            admin_id,
+            best_score,
+            test_id,
+        ]
+
+    def db_test_update(self, check_scores=False):
+
+        query = "UPDATE Assessment_Results SET comp_id = ?, user_id = ?, score = ?, date_taken = ?, admin_id = ?, best_score = ?, WHERE test_id = ?;"
+
+        cursor.execute(query, self.attributes)
+        connection.commit()
+
+
+def add_test_results():
+    comp_id_checkpoint = False
+    user_id_checkpoint = False
+    score_checkpoint = False
+    date_checkpoint = False
+    admin_checkpoint = False
+    best_score_checkpoint = False
+
+    while True:
+        if comp_id_checkpoint == False:
+            view_competencies()
+            comp_id = input(
+                "Please input the competency ID belonging to the competency this test belongs long to \n[HIT ENTER TO RETURN TO MENU WITHOUT SAVING] \n > "
+            )
+            if not comp_id:
+                return None
+            comp_id_checkpoint = True
+
+        if user_id_checkpoint == False:
+            user_id = input(
+                "Input user ID of user that took this test \n[HIT ENTER TO RETURN TO MENU WITHOUT SAVING, HIT ENTER] \n > "
+            )
+            if not user_id:
+                return None
+            user_id_checkpoint = True
+
+        if score_checkpoint == False:
+            score = input(
+                "Input New Score (0-4) \n[HIT ENTER TO RETURN TO MENU WITHOUT SAVING] \n > "
+            )
+            while True:
+                if not score:
+                    return None
+                else:
+                    score_range = ("0", "1", "2", "3", "4")
+                    if score not in score_range:
+                        score = input(
+                            "INVALID. NOT WITHIN SCORE RANGE \nInput New Score (0-4) \n[HIT ENTER TO RETURN TO MENU WITHOUT SAVING] \n > "
+                        )
+                        continue
+                    else:
+                        if score == "0":
+                            score = "0 (No competency- Needs training and direction)"
+
+                        elif score == "1":
+                            new_score = "1 (Basic Competency - Needs Ongoing Support)"
+
+                        elif score == "2":
+                            score = (
+                                "2 (Intermediate Competency - Needs Occasional Support)"
+                            )
+
+                        elif score == "3":
+                            score = (
+                                "3 (Advanced Competency - Completes Task Independently)"
+                            )
+
+                        elif score == "4":
+                            score = "4 (Expert Competency - Can Effectively pass on this knowledge and can initiate optimizations)"
+
+        if date_checkpoint == False:
+            date = input(
+                "Input Date test was taken \n[HIT ENTER TO RETURN TO MENU WITHOUT SAVING] \n > "
+            )
+
+        if admin_checkpoint == False:
+            view_users(admin_filter=True)
+            admin_id = input(
+                "Input ID Manager that monitored the test \n[IF NO MANAGER MONITORED TEST, HIT ENTER. HOWEVER SOME TESTS LIKE FOR COMPETENCY 1 REQUIRE A MANAGER TO MONITOR TEST] \n > ")
+            if not admin_id:
+                admin_id = 'N/A'
+            elif admin_id:
+                
+
+        if best_score_checkpoint == False:
+            pass
+
+
+def get_test(test_id):
+
+    query = "SELECT * FROM Assessment_Results WHERE test_id = ?"
+
+    (
+        test_id,
+        comp_id,
+        user_id,
+        score,
+        date_taken,
+        admin_id,
+        best_score,
+    ) = cursor.execute(query, (test_id,)).fetchone()
+
+    test = Test_Results(
+        test_id,
+        comp_id,
+        user_id,
+        score,
+        date_taken,
+        admin_id,
+        best_score,
+    )
+
+    return test
+
+
+def view_test_results(id_num=None, test_id=None):
+        query = """SELECT ar.test_id, ar.comp_id, cad.test_name, ar.user_id, u.full_name, ar.score, ar.date_taken, ar.admin_id, m.full_name, ar.best_score
+        FROM Assessment_Results ar
+        LEFT OUTER JOIN Users u
+            ON ar.user_id = u.user_id 
+    LEFT OUTER JOIN Users m 
+        ON m.user_id = ar.admin_id
+    LEFT OUTER JOIN Competency_Assessment_Data cad
+        ON cad.comp_id = ar.comp_id"""
+    while True:
+
+        if admin:
+            if not test_id:
+                    # query = f"{query} ORDER BY ar.test_id;"
+                    rows = cursor.execute(
+                        query,
+                    ).fetchall()
+                print(
+                    f"{'Test ID':<8}{'Comp ID':<8}{'Test Name':<40}{'User ID':<8}{'Name':<20}{'Score':<7}{'Date':<11}{'Admin ID':<9}{'Admin Name':<15}{'Best Score':<11}"
+                )
+                for row in rows:
+                    row = [str(i) for i in row]
+                    print("test")
+                        print(
+                            f"{row[0]:<8}{row[1]:<8}{row[2]:<40}{row[3]:<8}{row[4]:<20}{row[5]:<7}{row[6]:<11}{row[7]:<9}{row[8]:<15}{row[9]:<11}"
+                        )
+                    break
+
+                elif test_id:
+                    while True:
+                        query = """SELECT ar.test_id, ar.comp_id, cad.test_name, ar.user_id, u.full_name, ar.score, ar.date_taken, ar.admin_id, m.full_name, ar.best_score
+                        FROM Assessment_Results ar
+                        LEFT OUTER JOIN Users u
+                            ON ar.user_id = u.user_id 
+                    JOIN Competency_Assessment_Data cad
+                        ON cad.comp_id = ar.comp_id
+                        WHERE ar.test_id = ?"""
+                        rows = cursor.execute(query, (id_num,)).fetchall()
+                    print(
+                        f"{'Test ID':<8}{'Comp ID':<8}{'Test Name':<40}{'User ID':<8}{'Name':<20}{'Score':<7}{'Date':<11}{'Admin ID':<9}{'Admin Name':<15}{'Best Score':<11}"
+                    )
+
+                        for row in rows:
+                            row = [str(i) for i in row]
+                            print(
+                            f"{row[0]:<8}{row[1]:<8}{row[2]:<40}{row[3]:<8}{row[4]:<20}{row[5]:<7}{row[6]:<11}{row[7]:<9}{row[8]:<15}{row[9]:<11}"
+                        )
+                    break
+
+            elif test_id:
+                test_id = f"{test_id}"
+                selected_test = get_test(test_id)
+                query = f"{query} WHERE ar.test_id = ?;"
+                while True:
+                    print(query)
+                    row = cursor.execute(query, (test_id,)).fetchone()
+                    connection.commit()
+                    print(
+                        f"Test ID: {row[0]} \n[1] Competency ID: {row[1]} \n[2] Test Name: {row[2]} \n[3] User ID: {row[3]} \n[4] Name: {row[4]} \n[5] Score: {row[5]} \n[6] Date: {row[6]} \n[7] Manager ID: {row[7]} \n[8] Acting Test Admin (Manager): {row[8]} \n[9] Best Score: {row[9]} \n"
+                    )
+                    inquiry = input(
+                        "To make changes to any information, enter the number of the field. \n[TO GO BACK TO MENU PRESS ENTER]\n > "
+                    )
+                    if inquiry:
+
+                        if inquiry == "1" or inquiry == '2':
+                            print(
+                                "//// CHANGES NEED TO BE MADE. SEE NOTES ON LINE 649 ////\n"
+                            )
+                            # view competencies with their comp_id, comp_name, and test name
+                            # prompt admin to input a comp_id and then according to that, change the info of the test result to state the competency id and test name
+
+                            if inquiry == "1":
+                                new_comp = input(
+                                    "Input new competency ID \n[PRESS ENTER TO RETURN] \n > "
+                                )
+
+                            # view competencies with their comp_id, comp_name, and test name
+                            new_comp = input(
+                                "Test Name changes according to Competency ID number. To change Test Name, input Competency ID of the desired Test Name \n[PRESS ENTER TO RETURN] \n >"
+                            )
+                            if new_comp:
+                                selected_test.comp_id = new_comp
+                                selected_test.db_update()
+
+                        elif inquiry == "3" or inquiry =='4':
+                            if inquiry == '3':
+                                new_user_id = input(
+                                    "Input User ID of desired User \n[PRESS ENTER TO RETURN] \n > "
+                                )
+
+                            elif inquiry == "4":
+                            pass
+                        elif inquiry == "5":
+                            pass
+                        elif inquiry == "6":
+                            pass
+                        elif inquiry == "7":
+                            pass
+                        elif inquiry == "8":
+                                new_admin_id = input(
+                                    "Name of the manager changes according to the Manager ID. Input Manager ID of desired Manager \n[PRESS ENTER TO RETURN] \n > "
+                                )
+
+                            if new_admin_id:
+                                selected_test.admin_id = new_admin_id
+                                selected_test.db_test_update()
+
+                        elif inquiry == "9":
+                            pass
+                        else:
+                            inquiry = input(
+                                "Input not recognized. Please enter corrisponding number to field you would like to make changes to \n[PRESS ENTER TO RETURN] \n > "
+                            )
+
+                    else:
+                        return None
+
+        else:
+            pass
+
+
+class Comps:
+    def __init__(
+        self,
+        comp_name,
+        test_name,
+        date_created,
+        comp_id=None,
+    ):
+        self.comp_id = comp_id
+        self.comp_name = comp_name
+        self.test_name = test_name
+        self.date_created = date_created
+
+    def db_update(self):
+        self.attributes = [
+            self.comp_name,
+            self.test_name,
+            self.date_created,
+            self.comp_id,
+        ]
+
+        query = "UPDATE Competency_Assessment_Data SET comp_name = ?, test_name = ?, date_created = ? WHERE comp_id = ?"
+
+        cursor.execute(query, self.attributes)
+        connection.commit()
+
+def get_competency(comp_id):
+    query = "SELECT * FROM Competency_Assessment_Data WHERE test_id = ?"
+    (comp_id, comp_name, test_name, date_created) = cursor.execute(
+        query, (comp_id,)
+    ).fetchone()
+
+    competency = Comps(comp_name, test_name, date_created, comp_id)
+
+    return competency
+
+
+def view_competencies(comp_id=None):
+    query = "SELECT * FROM Competency_Assessment_Data"
+    while True:
+        if admin == True:
+            if not comp_id:
+                rows = cursor.execute(query).fetchall()
+
+                print(
+                    f"{'Comp ID':<8}{'Competency':<30}{'Test Name':<40}{'Date Added'}"
+                )
+
+                for row in rows:
+                    row = [str(i) for i in row]
+                    print(f"{row[0]:<8}{row[1]:<30}{row[2]:<40}{row[3]}")
+                return None
+        else:
+            pass
+
+
 make_table()
 
 
@@ -501,7 +865,13 @@ import_tests(list_of_lists_of_tests)
 import_mock_test_results()
 
 
-# add_user()
-
 admin = True
-view_users("14")
+# view_users("14")
+
+# search_users()
+
+view_test_results()
+
+# while True:
+#     if admin == True:
+#         pass
