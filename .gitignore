@@ -161,7 +161,6 @@ cython_debug/
 
 assessments.db
 notes.txt
-pipefile
-pipefile.lock
+Pipefile.lock
 test.py
 assessments.db

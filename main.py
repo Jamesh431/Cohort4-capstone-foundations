@@ -7,10 +7,10 @@ dt = datetime.now()
 
 import curses
 
-# pip install windows-curses
+# pipen install windows-curses
 from curses import wrapper
 
-# pip install tqdm
+# pipen install tqdm
 from tqdm import tqdm
 import time
 import os
