@@ -1,5 +1,6 @@
 full_name,phone,email,user_type,hire_date,date_created
-James Hales,385-555-7777,fake@email.com,admin,09/14/2022,11/30/2022
+Test Admin,385-555-7777,fake@admin.com,admin,09/14/2022,11/30/2022
+Test User,555-555-5555,fake@user.com,user,09/14/2022,11/30/2022
 Melisande Zimmer,869-115-5262,mzimmer0@accuweather.com,user,02/09/2021,11/30/2022
 Bert Saket,469-621-8772,bsaket1@mlb.com,user,06/07/2021,11/30/2022
 Gisela Yashaev,606-283-6622,gyashaev2@bravesites.com,user,09/29/2022,11/30/2022

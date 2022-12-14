@@ -1,21 +1,25 @@
-test_id,user_id,competency, assessment,score,date_taken,admin_id
-1,15,Variables,Variables Exam,3,11/30/2022,14
-2,3,Computer Anatomy,Physical Computer Anatomy Test,2,11/30/2022,14
-3,7,Data Types,Data Types Exam,2,11/30/2022,6
-4,8,Data Types,Data Types Exam,2,11/30/2022,14
-5,16,Functions,Functions Exam,3,11/30/2022,14
-6,12,Variables,Variables Exam,2,11/30/2022,14
-7,12,Conditionals,Physical Conditionls Test,3,11/30/2022,6
-8,15,Variables,Variables Exam,0,11/30/2022,6
-9,16,Lists,List Exam,3,11/30/2022,14
-10,9,Variables,Variables Exam,1,11/30/2022,6
-11,19,Data Types,Data Types Exam,3,11/30/2022,14
-12,15,Exception Handling,Exception Handling Exam,4,11/30/2022,14
-13,9,Computer Anatomy,Physical Computer Anatomy Test,4,11/30/2022,14
-14,4,Loops,Fruit Loops Test,3,11/30/2022,6
-15,10,Computer Anatomy,Physical Computer Anatomy Test,4,11/30/2022,14
-16,5,Exception Handling,Exception Handling Exam,3,11/30/2022,14
-17,13,Conditionals,Physical Conditionls Test,2,11/30/2022,6
-18,18,Boolean Logic,Building Block Boolean Logic Test,3,11/30/2022,14
-19,19,Data Types,Data Types Exam,3,11/30/2022,6
-20,20,Object-Oriented Programming,OOP Exam,2,11/30/2022,6
+test_id,comp_id,user_id,score,date_taken,admin_id,best_score
+1,1,15,3 (Advanced Competency),11/30/2022,14,1
+2,1,3,2 (Intermediate Competency),11/30/2022,14,1
+3,3,7,2 (Intermediate Competency),11/30/2022,6,1
+4,4,8,2 (Intermediate Competency),11/30/2022,14,1
+5,5,16,3 (Advanced Competency),11/30/2022,14,1
+6,6,12,2 (Intermediate Competency),11/30/2022,14,1
+7,7,12,3 (Advanced Competency),11/30/2022,6,1
+8,8,15,0 (No competency),11/30/2022,6,1
+9,9,16,3 (Advanced Competency),11/30/2022,14,1
+10,10,9,1 (Basic Competency),11/30/2022,6,1
+11,11,2,3 (Advanced Competency),11/30/2022,14,1
+12,12,15,4 (Expert Competency),11/30/2022,14,1
+13,13,9,4 (Expert Competency),11/30/2022,14,1
+14,14,4,3 (Advanced Competency),11/30/2022,6,1
+15,15,10,4 (Expert Competency),11/30/2022,14,1
+16,16,5,3 (Advanced Competency),11/30/2022,14,1
+17,1,13,2 (Intermediate Competency),11/30/2022,6,1
+18,2,18,3 (Advanced Competency),11/30/2022,14,1
+19,3,19,3 (Advanced Competency),11/30/2022,6,1
+20,4,2,2 (Intermediate Competency),11/30/2022,6,0
+21,1,2,3 (Advanced Competency),12/08/2022,6,1
+22,2,2,3 (Advanced Competency),12/08/2022,6,1
+23,3,2,2 (Intermediate Competency),12/08/2022,6,1
+24,4,2,4 (Expert Competency),12/08/2022,6,1

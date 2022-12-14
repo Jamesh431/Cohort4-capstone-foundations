@@ -5,7 +5,16 @@ allow users to be able to login with their full_name and password or even their 
 
 when users are added, add information to the user field that states which admin had entered that user
 
+try to user inheritance by having all the classes their own sub class then everything of theirs just their own sub-sub classes that only changes specific things, like the quieries in each db_update
 
+
+
+Export reports to CSV
+Competency report by competency and users
+Competency report for a single user
+Import assessment results from CSV
+The ability to import assessment results from a CSV file
+The CSV file would contain columns user_id, assessment_id, score, date_taken
 
   PK: PRIMARY KEY. If more than one column in a table has a PK designation, then it is a compound primary key
 

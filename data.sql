@@ -7,39 +7,31 @@ CREATE TABLE IF NOT EXISTS Users (
   user_type TEXT DEFAULT user,
   date_created TEXT,
   hire_date TEXT,
-  active INTEGER DEFAULT 1
+  active INTEGER DEFAULT True
 );
 
 
 CREATE TABLE IF NOT EXISTS Competency_Assessment_Data (
-  comp_name TEXT NOT NULL UNIQUE,
+  comp_id INTEGER PRIMARY KEY AUTOINCREMENT,
+  comp_name TEXT NOT NULL,
   test_name TEXT,  
   date_created TEXT,
-  PRIMARY KEY (comp_name, test_name)
+  UNIQUE (comp_name, test_name)
 );
 
 
 CREATE TABLE IF NOT EXISTS Assessment_Results (
   test_id INTEGER PRIMARY KEY AUTOINCREMENT,
+  comp_id INTEGER,
   user_id INTEGER,
-  full_name TEXT,
-  competency TEXT,
-  assessment TEXT,
   score INTEGER,
   date_taken TEXT,
-  admined_by TEXT,
   admin_id INTEGER,
-  best_score INTEGER,
+  best_score INTEGER DEFAULT False,
 
   FOREIGN KEY (user_id)
     REFERENCES Users(user_id),
-  FOREIGN KEY (full_name)
-    REFERENCES Users(full_name),
-  FOREIGN KEY (admined_by)
-    REFERENCES Users(user_id),
   FOREIGN KEY (admin_id)
-    REFERENCES Users(full_name),
-  FOREIGN KEY (competency)
-    REFERENCES Competency_Assessment_Data(comp_name),
-  FOREIGN KEY (assessment)
-    REFERENCES Competency_Assessment_Data(test_name));
+    REFERENCES Users(user_id),
+  FOREIGN KEY (comp_id)
+    REFERENCES Competency_Assessment_Data(comp_id));
