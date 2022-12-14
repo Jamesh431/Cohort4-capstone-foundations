@@ -1,4 +1,4 @@
-Only need the 6 files uploaded to the github (all excluding erd, and this read.me), database will build itself. (ensure to use the pipfile uploaded, if not run following commands in terminal:
+Only need the 6 files uploaded to the github (all excluding erd, and both readme's), database will build itself. (ensure to use the pipfile uploaded, if not run following commands in terminal:
 pipenv install
 pipenv install bcrypt
 pipenv install windows-curses
